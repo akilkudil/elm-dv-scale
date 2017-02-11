@@ -45,7 +45,7 @@ range limits model=
                     then
                       (stop-start)/(model.domain.stop - model.domain.start)
                     else
-                      0
+                      1
             b = if (model.domain.stop - model.domain.start) > 0
                     then
                       start - model.domain.start*a
@@ -101,7 +101,7 @@ defaultRange =
             {
               start=0,
               stop=0,
-              a=0,
+              a=1,
               b=0,
               data=Dict.empty
             }

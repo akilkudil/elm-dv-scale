@@ -1,6 +1,6 @@
 import Html exposing (..)
 import Scale exposing (..)
-import Svg exposing (..)
+--import Svg exposing (..)
 
 scale3 = scale |> domain [1,7] |> range [1,5]
 
@@ -10,4 +10,4 @@ range = Scale.range
 
 
 
-main = text(toString(scale3 ))
+main = text(toString(scale |> getScale 5 ))
