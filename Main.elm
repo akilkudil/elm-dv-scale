@@ -1,15 +1,19 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Scale exposing (..)
+
+
+--import OrdinalScale exposing (..)
+
+import LinearScale exposing (..)
 
 
 --import Svg exposing (..)
 
 
 test =
-    linearScale |> domain [ 4, 9 ] |> range [ 1, 10 ]
+    linearScale |> domain [ 1, 3, 4, 5, 7 ] |> setLookup
 
 
 main =
-    text (toString (test.category) ++ "\x0D\n" ++ toString (test.linear))
+    text (toString (test))

@@ -1,4 +1,4 @@
-module LinearScale exposing (domain, range, linearScale, getScaledValue, Model)
+module LinearScale exposing (domain, range, linearScale, lookupRange, setLookup)
 
 import Category exposing (Category(..))
 import List exposing (..)
@@ -8,90 +8,80 @@ import Dict exposing (..)
 -- update
 
 
-domain rawData model =
+domain : List Float -> Model -> Model
+domain list model =
+    { model | domain = list }
+
+
+range : List Float -> Model -> Model
+range list model =
+    { model | range = list } |> setLookup
+
+
+lookupRange : Float -> Model -> Float
+lookupRange dp model =
     let
-        start =
-            case (head rawData) of
-                Nothing ->
-                    0
-
-                Just x ->
-                    x
-
-        stop =
-            case (head (reverse rawData)) of
-                Nothing ->
-                    0
-
-                Just y ->
-                    y
+        rangeValue =
+            Dict.get dp model.lookup
     in
-        { model | domain = { start = start, stop = stop, data = rawData } }
-
-
-insertToDict : Float -> Float -> Dict Float Float -> Dict Float Float
-insertToDict k v dict =
-    let
-        newMap =
-            Dict.insert k v dict
-    in
-        newMap
-
-
-getScaledValue : Float -> Model -> Float
-getScaledValue dp model =
-    let
-        scaledValue =
-            Dict.get dp model.range.data
-    in
-        case scaledValue of
+        case rangeValue of
             Nothing ->
-                (model.range.a * dp + model.range.b)
+                (model.a * dp + model.b)
 
             Just x ->
                 x
 
 
-range limits model =
+setLookup model =
     let
-        start =
-            case (head limits) of
+        firstDomain =
+            case (List.minimum model.domain) of
                 Nothing ->
                     0
 
                 Just x ->
                     x
 
-        stop =
-            case (head (reverse limits)) of
+        lastDomain =
+            case (List.maximum model.domain) of
                 Nothing ->
                     0
 
-                Just y ->
-                    y
+                Just x ->
+                    x
+
+        firstRange =
+            case (List.minimum model.range) of
+                Nothing ->
+                    0
+
+                Just x ->
+                    x
+
+        lastRange =
+            case (List.maximum model.range) of
+                Nothing ->
+                    0
+
+                Just x ->
+                    x
 
         a =
-            if (model.domain.stop - model.domain.start) > 0 then
-                (stop - start) / (model.domain.stop - model.domain.start)
+            if ((lastDomain - firstDomain) /= 0) && ((lastRange - firstRange) /= 0) then
+                (lastRange - firstRange) / (lastDomain - firstDomain)
             else
                 1
 
         b =
-            if (model.domain.stop - model.domain.start) > 0 then
-                start - model.domain.start * a
+            if ((lastDomain - firstDomain) /= 0) && ((lastRange - firstRange) /= 0) then
+                firstRange - firstDomain * a
             else
                 0
 
-        emptyDict =
-            Dict.empty
-
-        scaledData =
-            if (a /= 0 && b /= 0) then
-                Dict.fromList (List.map (\x -> ( x, a * x + b )) model.domain.data)
-            else
-                emptyDict
+        newLookup =
+            Dict.fromList (List.map (\x -> ( x, a * x + b )) model.domain)
     in
-        { model | range = { start = start, stop = stop, a = a, b = b, data = scaledData } }
+        { model | a = a, b = b, lookup = newLookup }
 
 
 
@@ -99,30 +89,13 @@ range limits model =
 
 
 type alias Model =
-    { category : Category
-    , domain : Domain
-    , range : Range
-    }
-
-
-type alias Domain =
-    { start : Float
-    , stop : Float
-    , data : List Float
-    }
-
-
-type alias Range =
-    { start : Float
-    , stop : Float
+    { category : Category.Category
+    , domain : List Float
+    , range : List Float
+    , lookup : Dict Float Float
     , a : Float
     , b : Float
-    , data : Dict Float Float
     }
-
-
-type alias Category =
-    Category.Category
 
 
 category : Category
@@ -130,20 +103,19 @@ category =
     Linear
 
 
+defaultDomain : List Float
 defaultDomain =
-    { start = 0
-    , stop = 0
-    , data = []
-    }
+    []
 
 
+defaultRange : List Float
 defaultRange =
-    { start = 0
-    , stop = 0
-    , a = 1
-    , b = 0
-    , data = Dict.empty
-    }
+    []
+
+
+defaultLookup : Dict Float Float
+defaultLookup =
+    Dict.empty
 
 
 linearScale : Model
@@ -151,4 +123,7 @@ linearScale =
     { category = category
     , domain = defaultDomain
     , range = defaultRange
+    , lookup = defaultLookup
+    , a = 1
+    , b = 0
     }
