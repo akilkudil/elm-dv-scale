@@ -1,28 +1,24 @@
-module PowerScale exposing (domain, range, powerScale, lookupRange, lookupDomain, setLookup)
+module PowerScale exposing (domain, range, powerScale, lookupRange, lookupDomain, setLookup, transform)
 
 import LinearScale exposing (..)
+import Category exposing (Category(..))
 import List exposing (..)
 
 
+transform func model =
+    func model
+
+
+baseTransformDef pow baseModel =
+    { baseModel | derivedDomain = List.map (\x -> x ^ pow) baseModel.derivedDomain }
+
+
+applyBaseTransform model =
+    { model | baseScale = baseTransformDef model.exp model.baseScale }
+
+
 domain list model =
-    let
-        firstDomain =
-            case (List.minimum list) of
-                Nothing ->
-                    0
-
-                Just x ->
-                    x ^ model.exp
-
-        lastDomain =
-            case (List.maximum list) of
-                Nothing ->
-                    0
-
-                Just x ->
-                    x ^ model.exp
-    in
-        { model | baseScale = (LinearScale.domain [ firstDomain, lastDomain ] model.baseScale) }
+    { model | baseScale = LinearScale.domain list model.baseScale } |> applyBaseTransform
 
 
 range list model =
@@ -42,6 +38,7 @@ setLookup model =
 
 
 powerScale k =
-    { baseScale = linearScale
+    { category = Power
+    , baseScale = linearScale
     , exp = k
     }

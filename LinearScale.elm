@@ -1,4 +1,4 @@
-module LinearScale exposing (domain, range, linearScale, lookupRange, lookupDomain, setLookup)
+module LinearScale exposing (domain, derivedDomain, range, linearScale, lookupRange, lookupDomain, setLookup, transform)
 
 import Category exposing (Category(..))
 import List exposing (..)
@@ -7,9 +7,36 @@ import List exposing (..)
 -- update
 
 
+transform func model =
+    func model
+
+
+min list =
+    case (List.minimum list) of
+        Nothing ->
+            0
+
+        Just x ->
+            x
+
+
+max list =
+    case (List.maximum list) of
+        Nothing ->
+            0
+
+        Just x ->
+            x
+
+
 domain : List Float -> Model -> Model
 domain list model =
-    { model | domain = list }
+    { model | domain = [ (min list), (max list) ] } |> derivedDomain list
+
+
+derivedDomain : List Float -> Model -> Model
+derivedDomain list model =
+    { model | derivedDomain = [ (min list), (max list) ] }
 
 
 range : List Float -> Model -> Model
@@ -30,36 +57,16 @@ lookupDomain rp model =
 setLookup model =
     let
         firstDomain =
-            case (List.minimum model.domain) of
-                Nothing ->
-                    0
-
-                Just x ->
-                    x
+            min model.derivedDomain
 
         lastDomain =
-            case (List.maximum model.domain) of
-                Nothing ->
-                    0
-
-                Just x ->
-                    x
+            max model.derivedDomain
 
         firstRange =
-            case (List.minimum model.range) of
-                Nothing ->
-                    0
-
-                Just x ->
-                    x
+            min model.range
 
         lastRange =
-            case (List.maximum model.range) of
-                Nothing ->
-                    0
-
-                Just x ->
-                    x
+            max model.range
 
         a =
             if ((lastDomain - firstDomain) /= 0) && ((lastRange - firstRange) /= 0) then
@@ -83,6 +90,7 @@ setLookup model =
 type alias Model =
     { category : Category
     , domain : List Float
+    , derivedDomain : List Float
     , range : List Float
     , a : Float
     , b : Float
@@ -108,6 +116,7 @@ linearScale : Model
 linearScale =
     { category = category
     , domain = defaultDomain
+    , derivedDomain = defaultDomain
     , range = defaultRange
     , a = 1
     , b = 0

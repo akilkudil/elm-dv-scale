@@ -1,4 +1,4 @@
-module OrdinalScale exposing (domain, range, ordinalScale, lookupRange, setLookup)
+module OrdinalScale exposing (domain, range, ordinalScale, lookupRange, lookupDomain, setLookup, transform)
 
 import Category exposing (Category(..))
 import List exposing (..)
@@ -6,6 +6,10 @@ import Dict exposing (..)
 
 
 --update
+
+
+transform func model =
+    func model
 
 
 domain : List String -> Model -> Model
@@ -34,7 +38,7 @@ setLookup model =
         newRange =
             deriveRange model
     in
-        { model | lookup = Dict.fromList (List.map2 (,) model.domain newRange) }
+        { model | lookup = Dict.fromList (List.map2 (,) model.domain newRange), reverseLookup = Dict.fromList (List.map2 (,) newRange model.domain) }
 
 
 lookupRange : String -> Model -> Int
@@ -51,6 +55,20 @@ lookupRange dp model =
                 x
 
 
+lookupDomain : Int -> Model -> String
+lookupDomain rp model =
+    let
+        domainValue =
+            Dict.get rp model.reverseLookup
+    in
+        case domainValue of
+            Nothing ->
+                ""
+
+            Just x ->
+                x
+
+
 
 --Model
 
@@ -60,6 +78,7 @@ type alias Model =
     , domain : List String
     , range : List Int
     , lookup : Dict String Int
+    , reverseLookup : Dict Int String
     }
 
 
@@ -83,10 +102,16 @@ defaultLookup =
     Dict.empty
 
 
+defaultReverseLookup : Dict Int String
+defaultReverseLookup =
+    Dict.empty
+
+
 ordinalScale : Model
 ordinalScale =
     { category = category
     , domain = defaultDomain
     , range = defaultRange
     , lookup = defaultLookup
+    , reverseLookup = defaultReverseLookup
     }
