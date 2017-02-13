@@ -1,8 +1,7 @@
-module LinearScale exposing (domain, range, linearScale, lookupRange, setLookup)
+module LinearScale exposing (domain, range, linearScale, lookupRange, lookupDomain, setLookup)
 
 import Category exposing (Category(..))
 import List exposing (..)
-import Dict exposing (..)
 
 
 -- update
@@ -20,16 +19,12 @@ range list model =
 
 lookupRange : Float -> Model -> Float
 lookupRange dp model =
-    let
-        rangeValue =
-            Dict.get dp model.lookup
-    in
-        case rangeValue of
-            Nothing ->
-                (model.a * dp + model.b)
+    model.a * dp + model.b
 
-            Just x ->
-                x
+
+lookupDomain : Float -> Model -> Float
+lookupDomain rp model =
+    (rp - model.b) / model.a
 
 
 setLookup model =
@@ -77,11 +72,8 @@ setLookup model =
                 firstRange - firstDomain * a
             else
                 0
-
-        newLookup =
-            Dict.fromList (List.map (\x -> ( x, a * x + b )) model.domain)
     in
-        { model | a = a, b = b, lookup = newLookup }
+        { model | a = a, b = b }
 
 
 
@@ -89,10 +81,9 @@ setLookup model =
 
 
 type alias Model =
-    { category : Category.Category
+    { category : Category
     , domain : List Float
     , range : List Float
-    , lookup : Dict Float Float
     , a : Float
     , b : Float
     }
@@ -113,17 +104,11 @@ defaultRange =
     []
 
 
-defaultLookup : Dict Float Float
-defaultLookup =
-    Dict.empty
-
-
 linearScale : Model
 linearScale =
     { category = category
     , domain = defaultDomain
     , range = defaultRange
-    , lookup = defaultLookup
     , a = 1
     , b = 0
     }
