@@ -5,4 +5,6 @@ type Category
     = Linear
     | Ordinal
     | Power
+    | Log
+    | Quantize
     | None

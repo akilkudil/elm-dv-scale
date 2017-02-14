@@ -1,6 +1,7 @@
 module LinearScale exposing (domain, derivedDomain, range, linearScale, lookupRange, lookupDomain, setLookup, transform)
 
 import Category exposing (Category(..))
+import Scale exposing (min, max)
 import List exposing (..)
 
 
@@ -11,32 +12,14 @@ transform func model =
     func model
 
 
-min list =
-    case (List.minimum list) of
-        Nothing ->
-            0
-
-        Just x ->
-            x
-
-
-max list =
-    case (List.maximum list) of
-        Nothing ->
-            0
-
-        Just x ->
-            x
-
-
 domain : List Float -> Model -> Model
 domain list model =
-    { model | domain = [ (min list), (max list) ] } |> derivedDomain list
+    { model | domain = [ (Scale.min list), (Scale.max list) ] } |> derivedDomain list
 
 
 derivedDomain : List Float -> Model -> Model
 derivedDomain list model =
-    { model | derivedDomain = [ (min list), (max list) ] }
+    { model | derivedDomain = [ (Scale.min list), (Scale.max list) ] }
 
 
 range : List Float -> Model -> Model
@@ -57,16 +40,16 @@ lookupDomain rp model =
 setLookup model =
     let
         firstDomain =
-            min model.derivedDomain
+            Scale.min model.derivedDomain
 
         lastDomain =
-            max model.derivedDomain
+            Scale.max model.derivedDomain
 
         firstRange =
-            min model.range
+            Scale.min model.range
 
         lastRange =
-            max model.range
+            Scale.max model.range
 
         a =
             if ((lastDomain - firstDomain) /= 0) && ((lastRange - firstRange) /= 0) then

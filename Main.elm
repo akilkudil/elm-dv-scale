@@ -5,9 +5,29 @@ import OrdinalScale exposing (..)
 import LinearScale exposing (..)
 import PowerScale exposing (..)
 import SqrtScale exposing (..)
+import LogScale exposing (..)
+import QuantizeScale exposing (..)
 
 
 --import Svg exposing (..)
+
+
+main =
+    div []
+        [ div [] [ text (toString (test1)) ]
+        , hr [] []
+        , div [] [ text (toString (test2)) ]
+        , hr [] []
+        , div [] [ text (toString (test3)) ]
+        , hr [] []
+        , div [] [ text (toString (test4)) ]
+        , hr [] []
+        , div [] [ text (toString (test5)) ]
+        , hr [] []
+        , div [] [ text (toString (test6)) ]
+        , hr [] []
+        , div [] [ text (toString (test6 |> QuantizeScale.lookupRange 3.3333)) ]
+        ]
 
 
 func model =
@@ -34,13 +54,9 @@ test4 =
     sqrtScale |> SqrtScale.domain [ 1, 2 ] |> SqrtScale.range [ 1, 10 ]
 
 
-main =
-    div []
-        [ div [] [ text (toString (test1)) ]
-        , hr [] []
-        , div [] [ text (toString (test2)) ]
-        , hr [] []
-        , div [] [ text (toString (test3)) ]
-        , hr [] []
-        , div [] [ text (toString (test4)) ]
-        ]
+test5 =
+    logScale 10 |> LogScale.domain [ 1, 10 ] |> LogScale.range [ 0, 1 ]
+
+
+test6 =
+    quantizeScale |> QuantizeScale.domain [ 0, 10 ] |> QuantizeScale.range [ "small", "medium", "large" ]
