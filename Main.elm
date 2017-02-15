@@ -7,6 +7,7 @@ import PowerScale exposing (..)
 import SqrtScale exposing (..)
 import LogScale exposing (..)
 import QuantizeScale exposing (..)
+import QuantileScale exposing (..)
 
 
 --import Svg exposing (..)
@@ -27,6 +28,10 @@ main =
         , div [] [ text (toString (test6)) ]
         , hr [] []
         , div [] [ text (toString (test6 |> QuantizeScale.lookupRange 3.3333)) ]
+        , hr [] []
+        , div [] [ text (toString (test7)) ]
+        , hr [] []
+        , div [] [ text (toString (test7 |> QuantileScale.lookupDomain "blue")) ]
         ]
 
 
@@ -60,3 +65,7 @@ test5 =
 
 test6 =
     quantizeScale |> QuantizeScale.domain [ 0, 10 ] |> QuantizeScale.range [ "small", "medium", "large" ]
+
+
+test7 =
+    quantileScale |> QuantileScale.domain [ 1, 3, 4, 5, 2, 7, 8, 9 ] |> QuantileScale.range [ "red", "green", "blue", "yellow", "violet" ] |> QuantileScale.setLookup

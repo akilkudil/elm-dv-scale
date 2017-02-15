@@ -7,4 +7,5 @@ type Category
     | Power
     | Log
     | Quantize
+    | Quantile
     | None
