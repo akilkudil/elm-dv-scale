@@ -3,6 +3,7 @@ module QuantizeScale exposing (domain, derivedDomain, range, quantizeScale, look
 import Category exposing (Category(..))
 import Scale exposing (min, max)
 import List exposing (..)
+import Dict exposing (..)
 
 
 -- update
@@ -12,30 +13,34 @@ transform func model =
     func model
 
 
-domain : List Float -> Model a -> Model a
+domain : List Float -> Model comparable -> Model comparable
 domain list model =
     { model | domain = [ (Scale.min list), (Scale.max list) ] } |> derivedDomain list
 
 
-derivedDomain : List Float -> Model a -> Model a
+derivedDomain : List Float -> Model comparable -> Model comparable
 derivedDomain list model =
     { model | derivedDomain = [ (Scale.min list), (Scale.max list) ] }
 
 
-range : List a -> Model a -> Model a
+range : List comparable -> Model comparable -> Model comparable
 range list model =
     { model | range = list } |> setLookup
 
-
+setLookup: Model comparable -> Model comparable
 setLookup model =
     let
         newInterval =
             (Scale.max model.derivedDomain - Scale.min model.derivedDomain) / (toFloat (List.length model.range))
 
-        newRange =
-            List.indexedMap (,) model.range
+        newLookup =
+            Dict.fromList ( List.indexedMap (,) model.range )
+        
+        newReverseLookup =
+            Dict.fromList (List.map2 (,) model.range (List.range 0 (List.length model.range)))  
+
     in
-        { model | rangeInterval = newInterval, derivedRange = newRange }
+        { model | rangeInterval = newInterval, lookup = newLookup, reverseLookup = newReverseLookup }
 
 
 lookupRange dp model =
@@ -44,55 +49,31 @@ lookupRange dp model =
             floor (dp / model.rangeInterval)
 
         v =
-            filter
-                (\( x, y ) ->
-                    if ( x, y ) == ( k, y ) then
-                        True
-                    else
-                        False
-                )
-                model.derivedRange
-                |> head
+            Dict.get k model.lookup
     in
-        case v of
-            Just ( x, y ) ->
-                Just y
+        v
 
-            Nothing ->
-                Nothing
-
+--lookupDomain: comparable -> Int
 
 lookupDomain rp model =
     let
-        v =
-            filter
-                (\( x, y ) ->
-                    if ( x, y ) == ( x, rp ) then
-                        True
-                    else
-                        False
-                )
-                model.derivedRange
-                |> head
+        v = 
+          Dict.get rp model.reverseLookup
     in
-        case v of
-            Just ( x, y ) ->
-                [ toFloat (x) * model.rangeInterval, toFloat (x + 1) * model.rangeInterval ]
-
-            Nothing ->
-                []
+        v
 
 
 
 -- Model
 
 
-type alias Model a =
+type alias Model comparable =
     { category : Category
     , domain : List Float
     , derivedDomain : List Float
-    , range : List a
-    , derivedRange : List ( Int, a )
+    , range : List comparable
+    , lookup : Dict Int comparable
+    , reverseLookup : Dict comparable Int
     , rangeInterval : Float
     }
 
@@ -107,22 +88,27 @@ defaultDomain =
     []
 
 
-defaultRange : List a
+defaultRange : List comparable
 defaultRange =
     []
 
 
-defaultDerivedRange : List ( Int, a )
-defaultDerivedRange =
-    []
+defaultLookup: Dict Int comparable
+defaultLookup =
+          Dict.empty
+
+defaultReverseLookup: Dict a Int
+defaultReverseLookup =
+          Dict.empty
 
 
-quantizeScale : Model a
+quantizeScale : Model comparable
 quantizeScale =
     { category = category
     , domain = defaultDomain
     , derivedDomain = defaultDomain
     , range = defaultRange
-    , derivedRange = []
+    , lookup = defaultLookup
+    , reverseLookup = defaultReverseLookup
     , rangeInterval = 0
     }

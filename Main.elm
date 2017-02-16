@@ -27,7 +27,7 @@ main =
         , hr [] []
         , div [] [ text (toString (test6)) ]
         , hr [] []
-        , div [] [ text (toString (test6 |> QuantizeScale.lookupRange 3.3333)) ]
+        , div [] [ text (toString (test6 |> QuantizeScale.lookupRange  1  )) ]
         , hr [] []
         , div [] [ text (toString (test7)) ]
         , hr [] []
@@ -52,7 +52,7 @@ test2 =
 
 
 test3 =
-    ordinalScale |> OrdinalScale.domain [ "aa", "bb", "cc" ] |> OrdinalScale.setLookup |> OrdinalScale.transform func
+    ordinalScale |> OrdinalScale.domain [ "aa", "bb", "cc" ] |> OrdinalScale.range [4,6,8] |> OrdinalScale.setLookup |> OrdinalScale.lookupDomain 6
 
 
 test4 =

@@ -41,32 +41,22 @@ setLookup model =
         { model | lookup = Dict.fromList (List.map2 (,) model.domain newRange), reverseLookup = Dict.fromList (List.map2 (,) newRange model.domain) }
 
 
-lookupRange : String -> Model -> Int
+lookupRange : String -> Model -> Maybe Int
 lookupRange dp model =
     let
         rangeValue =
             Dict.get dp model.lookup
     in
-        case rangeValue of
-            Nothing ->
-                -99999
-
-            Just x ->
-                x
+        rangeValue
 
 
-lookupDomain : Int -> Model -> String
+lookupDomain : Int -> Model -> Maybe String
 lookupDomain rp model =
     let
         domainValue =
             Dict.get rp model.reverseLookup
     in
-        case domainValue of
-            Nothing ->
-                ""
-
-            Just x ->
-                x
+        domainValue
 
 
 
