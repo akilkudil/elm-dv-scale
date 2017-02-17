@@ -31,7 +31,7 @@ main =
         , hr [] []
         , div [] [ text (toString (test7)) ]
         , hr [] []
-        , div [] [ text (toString (test7 |> QuantileScale.lookupDomain "blue")) ]
+        , div [] [ text (toString (test7 |> QuantileScale.lookupDomain "blue" )) ]
         ]
 
 
