@@ -27,11 +27,11 @@ main =
         , hr [] []
         , div [] [ text (toString (test6)) ]
         , hr [] []
-        , div [] [ text (toString (test6 |> QuantizeScale.lookupRange  1  )) ]
+        , div [] [ text (toString (test6 |> QuantizeScale.lookupRange 1)) ]
         , hr [] []
         , div [] [ text (toString (test7)) ]
         , hr [] []
-        , div [] [ text (toString (test7 |> QuantileScale.lookupDomain "blue" )) ]
+        , div [] [ text (toString (test7 |> QuantileScale.lookupDomain "blue")) ]
         ]
 
 
@@ -52,7 +52,7 @@ test2 =
 
 
 test3 =
-    ordinalScale |> OrdinalScale.domain [ "aa", "bb", "cc" ] |> OrdinalScale.range [4,6,8] |> OrdinalScale.setLookup |> OrdinalScale.lookupDomain 6
+    ordinalScale |> OrdinalScale.domain [ "aa", "bb", "cc" ] |> OrdinalScale.range [ 4, 6, 8 ] |> OrdinalScale.setLookup |> OrdinalScale.lookupDomain 6
 
 
 test4 =

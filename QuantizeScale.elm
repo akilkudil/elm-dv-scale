@@ -27,18 +27,18 @@ range : List comparable -> Model comparable -> Model comparable
 range list model =
     { model | range = list } |> setLookup
 
-setLookup: Model comparable -> Model comparable
+
+setLookup : Model comparable -> Model comparable
 setLookup model =
     let
         newInterval =
             (Scale.max model.derivedDomain - Scale.min model.derivedDomain) / (toFloat (List.length model.range))
 
         newLookup =
-            Dict.fromList ( List.indexedMap (,) model.range )
-        
-        newReverseLookup =
-            Dict.fromList (List.map2 (,) model.range (List.range 0 (List.length model.range)))  
+            Dict.fromList (List.indexedMap (,) model.range)
 
+        newReverseLookup =
+            Dict.fromList (List.map2 (,) model.range (List.range 0 (List.length model.range)))
     in
         { model | rangeInterval = newInterval, lookup = newLookup, reverseLookup = newReverseLookup }
 
@@ -53,12 +53,15 @@ lookupRange dp model =
     in
         v
 
+
+
 --lookupDomain: comparable -> Int
+
 
 lookupDomain rp model =
     let
-        v = 
-          Dict.get rp model.reverseLookup
+        v =
+            Dict.get rp model.reverseLookup
     in
         v
 
@@ -93,13 +96,14 @@ defaultRange =
     []
 
 
-defaultLookup: Dict Int comparable
+defaultLookup : Dict Int comparable
 defaultLookup =
-          Dict.empty
+    Dict.empty
 
-defaultReverseLookup: Dict a Int
+
+defaultReverseLookup : Dict a Int
 defaultReverseLookup =
-          Dict.empty
+    Dict.empty
 
 
 quantizeScale : Model comparable
